@@ -1,0 +1,166 @@
+----------------------------
+*****Maven Repository*******
+----------------------------
+
+#A maven repository is a directory of packaged JAR file with pom.xml file. Maven searches for dependencies in the repositories. There are 3 types of maven repository:
+
+->Local Repository
+->Central Repository
+->Remote Repository
+
+#Maven searches for the dependencies in the following order:
+
+Local repository then Central repository then Remote repository.
+
+If dependency is not found in these repositories, maven stops processing and throws an error.
+
+1) Maven Local Repository
+Maven local repository is located in your local system. It is created by the maven when you run any maven command.
+
+By default, maven local repository is %USER_HOME%/.m2 directory. For example: C:\Users\SSS IT\.m2.
+
+Update location of Local Repository
+We can change the location of maven local repository by changing the settings.xml file. It is located in MAVEN_HOME/conf/settings.xml, for example: E:\apache-maven-3.1.1\conf\settings.xml.
+
+Let's see the default code of settings.xml file.
+
+settings.xml
+------------------
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"   
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+   xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">  
+  <!-- localRepository  
+   | The path to the local repository maven will use to store artifacts.  
+   |  
+   | Default: ${user.home}/.m2/repository  
+  <localRepository>/path/to/local/repo</localRepository>  
+  -->  
+  
+...  
+</settings>  
+
+Now change the path to local repository. After changing the path of local repository, it will look like this:
+
+settings.xml
+---------------
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"   
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+   xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">  
+   <localRepository>e:/mavenlocalrepository</localRepository>  
+    
+...  
+</settings>  
+
+2) Maven Central Repository
+Maven central repository is located on the web. It has been created by the apache maven community itself.
+
+The path of central repository is: http://repo1.maven.org/maven2/.
+
+The central repository contains a lot of common libraries that can be viewed by this url http://search.maven.org/#browse.
+
+
+3) Maven Remote Repository
+Maven remote repository is located on the web. Most of libraries can be missing from the central repository such as JBoss library etc, so we need to define remote repository in pom.xml file.
+
+Let's see the code to add the jUnit library in pom.xml file.
+
+pom.xml
+--------
+<project xmlns="http://maven.apache.org/POM/4.0.0"   
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0   
+http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+  
+  <modelVersion>4.0.0</modelVersion>  
+  
+  <groupId>com.javatpoint.application1</groupId>  
+  <artifactId>my-application1</artifactId>  
+  <version>1.0</version>  
+  <packaging>jar</packaging>  
+  
+  <name>Maven Quick Start Archetype</name>  
+  <url>http://maven.apache.org</url>  
+  
+  <dependencies>  
+    <dependency>  
+      <groupId>junit</groupId>  
+      <artifactId>junit</artifactId>  
+      <version>4.8.2</version>  
+      <scope>test</scope>  
+    </dependency>  
+  </dependencies>  
+  
+</project>  
+
+
+Maven pom.xml file
+------------------------
+POM is an acronym for Project Object Model. The pom.xml file contains information of project and configuration information for the maven to build the project such as dependencies, build directory, source directory, test source directory, plugin, goals etc.
+
+Maven reads the pom.xml file, then executes the goal.
+
+Before maven 2, it was named as project.xml file. But, since maven 2 (also in maven 3), it is renamed as pom.xml.
+
+ pom.xml
+-----------
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"   
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0   
+http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+  
+  <modelVersion>4.0.0</modelVersion>  
+  
+  <groupId>com.javatpoint.application1</groupId>  
+  <artifactId>my-application1</artifactId>  
+  <version>1.0</version>  
+  <packaging>jar</packaging>  
+  
+  <name>Maven Quick Start Archetype</name>  
+  <url>http://maven.apache.org</url>  
+  
+  <dependencies>  
+    <dependency>  
+      <groupId>junit</groupId>  
+      <artifactId>junit</artifactId>  
+      <version>4.8.2</version>  
+      <scope>test</scope>  
+    </dependency>  
+  </dependencies>  
+  
+</project>  
+
+
+
+Maven Example
+---------------------
+We can create a simple maven example by executing the archetype:generate command of mvn tool.
+
+To create a simple java project using maven, you need to open command prompt and run the archetype:generate command of mvn tool.
+
+ 1. Create maven Project
+-------------------------------
+mvn archetype:generate -Dhttp.proxyHost=proxy.cognizant.com -Dhttp.proxyPort=6050 -Dhttps.proxyHost=proxy.cognizant.com -Dhttps.proxyPort=6050 -Dhttp.proxyUser=123456 -Dhttp.proxyPassword=password -DgroupId=com.cognizant.maven -DartifactId=java-project-I -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+
+2. Compile maven Project
+-------------------------------
+mvn clean compile -Dhttp.proxyHost=proxy.cognizant.com -Dhttp.proxyPort=6050 -Dhttps.proxyHost=proxy.cognizant.com -Dhttps.proxyPort=6050 -Dhttp.proxyUser=123456 -Dhttp.proxyPassword=password
+
+3. Run the Maven Java Project
+
+Run the Maven Java Project
+To run the project, go to the project directory\target\classes,
+
+>java com.cognizant.maven.App  
+
+How to build the maven project or how to package maven project?
+The mvn package command completes the build life cycle of the maven project such as:
+
+1.validate
+2.compile
+3.test
+4.package
+5.integration-test
+6.verify
+7.install
+8.deploy
