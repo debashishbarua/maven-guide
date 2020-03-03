@@ -1,0 +1,600 @@
+
+#***********************Collectors Examples****************
+#***********************Employee.java**********************
+public class Employee {
+
+	private int id;
+	private String name;
+	private double salary;
+	private String deptName;
+	
+	
+	public Employee() {
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public Employee(int id, String name, double salary, String deptName) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.salary = salary;
+		this.deptName = deptName;
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public double getSalary() {
+		return salary;
+	}
+
+
+	public void setSalary(double salary) {
+		this.salary = salary;
+	}
+
+
+	public String getDeptName() {
+		return deptName;
+	}
+
+
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", salary=" + salary + ", deptName=" + deptName + "]";
+	}
+	
+	
+}
+
+
+/*************CollectorsDemo.java***************************************/
+
+
+
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
+
+public class CollectorsDemo {
+	//private static List<Employee> employees=new ArrayList<Employee>();
+	private static List<Employee> employees=Arrays.asList(
+			new Employee[]{
+					new Employee(10,"Aman",40000,"CS"),
+					new Employee(11,"Ajay",50000,"CS"),
+					new Employee(12,"Akash",45000,"IT"),
+					new Employee(20,"Alok",43000,"IT"),
+					new Employee(19,"Arzu",30000,"IT"),
+					new Employee(18,"Akbar",51000,"IT"),
+					new Employee(17,"Ayaon",25000,"EC"),
+					new Employee(15,"Ambika",10000,"SALES"),
+					new Employee(30,"Ashok",59000,"SALES"),
+					new Employee(21,"Ashish",60000,"SALES"),
+					new Employee(25,"Anish",70000,"MKTG")
+					}
+			);
+	
+	public static void main(String[] args) {
+		// Accumulate names into a List
+		List<String> list=employees
+				.stream()
+				.map(Employee::getName)
+				.collect(Collectors.toList());
+		System.out.println(list);
+		// Accumulate names into a List
+		List<String> linkedList=employees
+				.stream()
+				.map(Employee::getName)
+				.collect(Collectors.toCollection(LinkedList::new));
+		System.out.println(linkedList);
+		System.out.println();
+		// Accumulate names into a Set
+		Set<String> set=employees
+				.stream()
+				.map(Employee::getName)
+				.collect(Collectors.toSet());
+		System.out.println(set);
+		// Accumulate names into a TreeSet
+		TreeSet< String> treeSet=employees
+				.stream()
+				.map(Employee::getName)
+				.collect(Collectors.toCollection(TreeSet::new));		
+		System.out.println(treeSet);
+		System.out.println();
+		// Convert elements to strings and concatenate them, separated by commas
+		String joined=employees
+				.stream()
+				.map(Object::toString)
+				.collect(Collectors.joining(", "));
+		System.out.println(joined);
+		// Compute sum of salaries of employee
+		double sum=employees
+				.stream()
+				.collect(Collectors.summingDouble(Employee::getSalary));
+		System.out.println("Sum Of Salary :" +sum);
+		System.out.println();
+		// Group employees by department
+		Map<String,List<Employee>> map=employees
+				.stream()
+				.collect(Collectors.groupingBy(Employee::getDeptName));
+		System.out.println(map);
+			
+		System.out.println();
+		 // Compute sum of salaries by department
+		Map<String,Double> totalByDept=employees
+				.stream()
+				.collect(Collectors.groupingBy(
+						  Employee::getDeptName,
+						  Collectors.summingDouble(Employee::getSalary)
+					      )
+				        );
+		System.out.println(totalByDept);
+		// Partition Emploees into IT and NON IT
+		Map<Boolean,List<Employee>> itnonit= employees
+				.stream()
+				.collect(
+						Collectors.partitioningBy(
+								e-> e.getDeptName().equals("Sales")
+						));
+		System.out.println(itnonit);
+		//Mapping
+		// Name by
+		Map<String, List<String>> nameByDept=employees
+				.stream()
+				.collect(Collectors.groupingBy(Employee::getDeptName,
+						Collectors.mapping(Employee::getName,Collectors.toList())));
+		
+				
+		System.out.println(nameByDept);
+		
+		Optional<Employee> minSalary=employees
+				.stream()
+				.collect(Collectors.minBy(Comparator.comparing(Employee::getSalary)));
+		System.out.println(minSalary.isPresent()?minSalary.get():"Not Available");
+		
+		Optional<Employee> maxSalary=employees
+				.stream()
+				.collect(Collectors.maxBy(Comparator.comparing(Employee::getSalary)));
+		System.out.println(maxSalary.orElse(null));
+		//Dept wise minsalary
+		System.out.println(
+				);
+		Map<String, Optional<Employee>> minSalByDept=employees
+				.stream()
+				.collect(Collectors
+						.groupingBy(Employee::getDeptName,Collectors
+								.reducing(BinaryOperator.minBy(Comparator
+										.comparing(Employee::getSalary)
+			   ))));
+		minSalByDept.forEach((k,v)->{
+			System.out.println("Dept " + k + " salary" + (v.isPresent()?v.get().getSalary():null));
+		});
+	}
+
+}
+
+
+/*******************************FilterDemo*******************/
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.stream.Collectors;
+
+public class FilterDemo {
+	static List<Employee >employees=Arrays.asList(
+			new Employee[]{ 
+			new Employee(1, "Jeff Bezos", 150000.0,10),
+			new Employee(2, "Bill Gates", 200000.0,10), 
+			new Employee(3, "Mark Beroz", 300000.0,20) ,
+			new Employee(6, "Joff Bezos", 100000.0,20),
+			new Employee(7, "Jiff Bezos", 100000.0,20),
+			new Employee(8, "Jaff Bezos", 500000.0,30),
+			new Employee(9, "Juff Bezos", 950000.0,30),
+			new Employee(5, "Jeff Bezos", 600000.0,40)
+			
+			});
+
+	public static void main(String[] args) {
+		//Count The Employee
+		Long countAll=employees
+				.stream()
+				.count();
+		System.out.println("Count All: " + countAll);
+		System.out.println();
+		//Count The Employee Using Predicate
+		Long count=employees
+				.stream()
+				.filter(e->e.getDeptId()==20)
+				.count();
+		System.out.println("Count with Predicate: " + count);
+		System.out.println();
+		//allMatch
+		Boolean allMatch=employees
+				.stream()
+				.allMatch(e->e.getDeptId()>0);
+		System.out.println("allMatch: " + allMatch);
+		System.out.println();
+
+		//allMatch
+		Boolean anyMatch=employees
+				.stream()
+				.anyMatch(e->e.getDeptId()>=10);
+				System.out.println("anyMatch: " + anyMatch);
+				System.out.println();
+		//Find Employee with max sal
+		Optional<Employee> maxSalEmp=employees
+				.stream()
+				.max(Comparator.comparing(Employee::getSalary));
+		System.out.println("Max Sal EMployee: " + maxSalEmp);
+		System.out.println();
+		
+		//Find Employee with max sal using Filter
+		Optional<Employee> maxSalEmpByPredicate=employees
+				.stream()
+				.filter(e -> e.getDeptId()==20 )
+				.max(Comparator.comparing(Employee::getSalary));
+		System.out.println("Max Sal Employee using filter: " + maxSalEmpByPredicate);
+		System.out.println();
+		
+		//Find Employee with max sal
+		Double avgSalEmp=employees
+				.stream()
+				.collect(Collectors.averagingDouble(Employee::getSalary));
+		System.out.println("avgSalEmp: " + avgSalEmp);
+		System.out.println();
+				
+		
+		//Find First
+		Optional<Employee> findFirst=employees
+				.stream()
+				.findFirst();
+		System.out.println("findFirst: " + findFirst.orElse(null));
+		System.out.println();
+		//Find Any
+		Optional<Employee> findAny=employees
+				.stream()
+				.findAny();
+		System.out.println("findAny: " + findAny.orElse(null));
+		System.out.println();
+	
+		//forEach
+		employees.stream().forEach(System.out::println);
+		System.out.println();
+		employees.stream().forEach(e -> System.out.println(e.getSalary()));
+		System.out.println();
+		employees.stream().forEachOrdered(e -> System.out.println(e.getSalary()));
+		
+		//Sort
+		employees
+		.stream()
+		.sorted(Comparator.comparing(Employee::getSalary))
+		.forEach(System.out::println);
+		
+		System.out.println();
+		//Map
+		employees
+		.stream()
+		.filter(e -> e.getName().startsWith("J"))
+		.map(Employee::getName)
+		.forEach(System.out::println);
+		System.out.println();
+		OptionalDouble avg=employees
+		.stream()
+		.mapToDouble(Employee::getSalary)
+		.average();
+		System.out.println("Avg: " + avg.getAsDouble());
+		
+
+	}
+
+}
+
+/************************************StreamDemo.java*********************************/
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class StreamDemo {
+
+	
+	public static void main(String[] args) {
+		Employee[] arrayOfEmps = { 
+				new Employee(1, "Jeff Bezos", 150000.0,10),
+				new Employee(2, "Bill Gates", 200000.0,10), 
+				new Employee(3, "Mark Zuckerberg", 300000.0,20) ,
+				new Employee(6, "Jeff Bezos", 100000.0,20),
+				new Employee(7, "Jeff Bezos", 100000.0,20),
+				new Employee(8, "Jeff Bezos", 500000.0,30),
+				new Employee(9, "Jeff Bezos", 100000.0,30),
+				new Employee(5, "Jeff Bezos", 600000.0,40)
+				
+				};
+
+		List<Employee> list=Arrays.asList(arrayOfEmps);
+		System.out.println("1");
+		Stream<Employee> empStream = Stream.of(arrayOfEmps);
+		empStream.forEach(System.out::println);
+		
+		System.out.println("2");
+		Stream.of(arrayOfEmps).forEach((Employee e) -> {
+			System.out.println(e);
+		});
+		
+		
+		//Filter
+		long count=Stream.of(arrayOfEmps)
+				.filter( e->e.getSalary()>=200000)
+				.count();
+		System.out.println("Count: " + count);
+		
+		System.out.println("4");
+		list.stream()
+		    .filter(e -> e.getSalary() <= 200000)
+		    .forEach(e-> System.out.println(e));
+		
+		System.out.println("5");
+		list.stream()
+	    .filter(e -> e.getSalary() <= 200000 && e.getId()<=5)
+	    .forEach(System.out::println);
+		
+		double avg1=list.stream()			    
+			    .mapToDouble(Employee::getSalary)
+			    .average()
+			    .getAsDouble();
+		
+		System.out.println("Average Salary: " + avg1);
+		
+		double max=list.stream()			    
+			    .mapToDouble(Employee::getSalary)
+			    .max()
+			    .getAsDouble();
+		
+		System.out.println("Max Salary: " + max);
+		
+		double avg=list.stream()
+		    .filter(e -> e.getSalary() <= 200000)
+		    .mapToDouble(Employee::getSalary)
+		    .average()
+		    .getAsDouble();
+		System.out.println("Average Salary: " + avg);		
+		
+		List<String> names=list.stream()
+				.map(s -> s.getName())
+				.collect(Collectors.toList());
+		System.out.println("List of Names: " +names);
+		
+		List<Integer> depts=list.stream()
+				.map(s -> s.getDeptId())
+				.distinct()
+				.collect(Collectors.toList());
+		System.out.println("List of Depts: " +depts);
+		
+		//Group By
+		
+		Map<Integer, List<Employee>> map1=list.stream()
+				.collect(Collectors.groupingBy(Employee::getDeptId));
+				
+		System.out.println(map1);	
+		
+	}
+
+}
+
+
+/****************************Student.java************************/
+import java.util.List;
+
+public class Student {
+		
+	private int id;
+	private String name;
+	private double marks;
+	
+	public Student() {
+		
+	}
+
+	public Student(int id, String name, double marks) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.marks = marks;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public double getMarks() {
+		return marks;
+	}
+
+	public void setMarks(double marks) {
+		this.marks = marks;
+	}
+
+	@Override
+	public String toString() {
+		return "Student [id=" + id + ", name=" + name + ", marks=" + marks + "]";
+	}
+	
+	
+	public void printStudent(){
+		System.out.println(
+			"[id=" + id + ", name=" + name + ", marks=" + marks + "]"
+		);
+	}
+	public void printStudentByName(List<Student> list,String name){
+		for (Student s : list) {
+			if(s.getName().equals(name)){
+				s.printStudent();
+			}
+		}
+	}	
+
+}
+/**************************CheckStudent***********************/
+public interface CheckStudent {
+	public boolean test(Student s);
+}
+
+
+/*********App.java************************/
+public class App {
+
+	public static void main(String[] args) {
+		List<Student> list = Arrays.asList(new Student[] { 
+				new Student(10, "Mr. X", 80.5), 
+				new Student(10, "Mr. a", 81.5),
+				new Student(10, "Mr. g", 84.5), 
+				new Student(10, "Mr. b", 70.5), 
+				new Student(10, "Mr. k", 60.5),
+				new Student(10, "Mr. c", 40.5) });
+		// Local Class
+		class CheckStudentImpl implements CheckStudent {
+			@Override
+			public boolean test(Student s) {
+				return s.getMarks() > 70;
+			}
+
+		}	
+		System.out.println("Print Student marks>70 By Local Class class");
+		printStudents(list, new CheckStudentImpl());
+		// Anonymous Class
+		System.out.println("Print Student marks>70 By Anonymous class");
+		printStudents(list, new CheckStudent() {
+			@Override
+			public boolean test(Student s) {
+				return s.getMarks() > 70;
+			}
+		});
+		// Print Students name start with a by Lambda
+		System.out.println("Print Student name End with a with Lambda");
+		printStudents(list, (Student s) -> s.getName().endsWith("a"));
+
+		// Print Students >70 by Lambda
+		System.out.println("Print Student marks>70 with Lambda ");
+		printStudents(list, (Student s) -> s.getMarks() > 70);
+		// Print Students name start with a by Lambda
+		System.out.println("Print Student name \"Mr. x\" with Lambda");
+		printStudents(list, (Student s) -> s.getName().equalsIgnoreCase("Mr. x"));
+
+	}
+
+	public static void printStudents(List<Student> list, CheckStudent cs) {
+		for (Student s : list) {
+			if (cs.test(s)) {
+				s.printStudent();
+			}
+		}
+
+	}
+
+}
+
+
+/****************************MathOperation****************************/
+public interface MathOperation {
+	public int operation(int a,int b);
+}
+
+/*************************MathOperationApp.java****************************/
+
+
+public class MathOperationApp {
+
+	public static void main(String[] args) {
+		MathOperation moAdd=(int a,int b)->{return a+b;};
+		MathOperation moSub=(a,b) -> a-b;
+		System.out.println(moAdd.operation(5, 5));
+		System.out.println(moSub.operation(5, 5));
+		
+		int r=operate(10, 5, (a,b)->a*b);
+		System.out.println(r);
+	}
+	private static int operate(int a,int b, MathOperation mo){
+		return mo.operation(a, b);
+	}
+
+}
+
+/***************HelloWorldService.java********************************/
+public interface HelloWorldService {
+	public void printMessage(String msg);
+}
+
+/****************HelloworldApp*******************/
+public class HelloWorldApp {
+
+	public static void main(String[] args) {
+
+		HelloWorldService hello = new HelloWorldService() {
+
+			@Override
+			public void printMessage(String msg) {
+				System.out.println(msg);
+
+			}
+		};
+		hello.printMessage("Hello World");
+		// With Lamda
+
+		HelloWorldService helloLambda = (msg) -> {
+			System.out.println(msg);
+		};
+		HelloWorldService helloLambda1 = msg -> System.out.println(msg);
+		helloLambda.printMessage("Hello World");
+	}
+
+}
+
+
